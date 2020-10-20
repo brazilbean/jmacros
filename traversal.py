@@ -6,9 +6,9 @@ Token = Union[dict, list, Value]
 
 def _eval_macro(token: Token, macros: dict) -> Tuple[Token, bool]:
     if '__macro' in token:
-        macro, extend = macros[token['__macro']]
+        macro, extend = macros[token['__macro']], False
     elif '__macro!' in token:
-        macro, extend = macros[token['__macro!']]
+        macro, extend = macros[token['__macro!']], True
     else:
         raise Exception('Illegal state')
 
