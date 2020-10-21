@@ -6,6 +6,11 @@ macros = {
     },
     "foolist": {
         "template": [1, 2, 3]
+    },
+    "foorecurse": {
+        "template": {
+            "foo": {"__macro": "foobar"}
+        }
     }
 }
 
@@ -53,3 +58,14 @@ def test_traverse_macro_extend_array():
     foo, extend = traverse(obj, macros, [])
     assert foo == [1, 1, 2, 3, 3]
 
+
+def test_traverse_recursive_macro():
+    obj = {
+        "foo": {"__macro": "foorecurse"}
+    }
+    foo, extend = traverse(obj, macros, [])
+    assert foo == {
+        "foo": {
+            "foo": {"a": "b"}
+        }
+    }
