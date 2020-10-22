@@ -1,6 +1,5 @@
-from typing import Union, Tuple
 import logging
-import json
+from typing import Union, Tuple, Protocol, Dict
 
 log = logging.getLogger(__name__)
 
@@ -8,37 +7,27 @@ Value = Union[bool, int, float, str]
 Token = Union[dict, list, Value]
 
 
-def _format_trace(trace: list) -> str:
+class MacroTypeDefinition(Protocol):
+    def is_macro(self, token: Token) -> bool:
+        pass
+
+    def eval_macro(self, token: Token, macros: Dict[str, 'MacroTypeDefinition'], trace: list) -> Tuple[Token, bool]:
+        pass
+
+
+def format_trace(trace: list) -> str:
     return ".".join((str(i) for i in ["$"] + trace))
 
 
-def _eval_macro(token: Token, macros: dict, trace: list) -> Tuple[Token, bool]:
-    log.debug("%s: eval macro %s", _format_trace(trace), json.dumps(token))
+def traverse(token: Token, macros: Dict[str, MacroTypeDefinition], trace: list) -> Tuple[Token, bool]:
+    for macro_name, macro in macros.items():
+        if macro.is_macro(token):
+            log.debug("%s: is %s macro", format_trace(trace), macro_name)
+            # do macro
+            return macro.eval_macro(token, macros, trace)
 
-    if '__macro' in token:
-        name = token['__macro']
-        macro, extend = macros[name], False
-    elif '__macro!' in token:
-        name = token['__macro!']
-        macro, extend = macros[name], True
-    else:
-        raise Exception('Illegal state')
-
-    return traverse(macro['template'], macros, trace + [name + "(template)"])[0], extend
-
-
-def _is_macro(token: Token) -> bool:
-    return isinstance(token, dict) and ('__macro' in token or '__macro!' in token)
-
-
-def traverse(token: Token, macros: dict, trace: list) -> Tuple[Token, bool]:
-    if _is_macro(token):
-        log.debug("%s: is macro", _format_trace(trace))
-        # do macro
-        return _eval_macro(token, macros, trace)
-
-    elif isinstance(token, dict):
-        log.debug("%s: is dict", _format_trace(trace))
+    if isinstance(token, dict):
+        log.debug("%s: is dict", format_trace(trace))
 
         # do dict
         kvs = []
@@ -53,7 +42,7 @@ def traverse(token: Token, macros: dict, trace: list) -> Tuple[Token, bool]:
         return {k: v for k, v in kvs}, False
 
     elif isinstance(token, list):
-        log.debug("%s: is list", _format_trace(trace))
+        log.debug("%s: is list", format_trace(trace))
 
         # do list
         items = []
@@ -67,7 +56,7 @@ def traverse(token: Token, macros: dict, trace: list) -> Tuple[Token, bool]:
         return items, False
 
     else:
-        log.debug("%s: is value", _format_trace(trace))
+        log.debug("%s: is value", format_trace(trace))
 
         # do value
         return token, False
