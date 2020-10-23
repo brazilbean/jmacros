@@ -3,9 +3,12 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+with open("version.txt", "r") as fh:
+    version = fh.read().strip()
+
 setuptools.setup(
     name="jmacros",
-    version="0.0.1",
+    version=version,
     author="Gordon Bean",
     author_email="brazilbean@gmail.com",
     description="Recursively evaluates customizable macros in JSON objects",
@@ -13,6 +16,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/brazilbean/jmacros",
     packages=setuptools.find_packages(),
+    install_requires=['jsonschema'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
