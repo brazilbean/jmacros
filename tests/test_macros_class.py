@@ -1,3 +1,5 @@
+from jsonschema import ValidationError
+
 from jmacros.macros import ClassMacro
 from tests.utils import traverse_and_compare
 from jmacros.traversal import traverse
@@ -30,6 +32,10 @@ macro_defs = {
     },
     "foosub": {
         "template": {"%.%": "the key was %"}
+    },
+    "fooinvalid": {
+        "schema": {"type": "object", "required": ["foo"]},
+        "template": "bar"
     }
 }
 
@@ -117,3 +123,14 @@ def test_percent_sub():
         "foo.foo": "the key was foo"
     }
     traverse_and_compare(obj, exp, macros)
+
+
+def test_invalid_schema():
+    obj = {
+        "foo": {"__macro": "fooinvalid"}
+    }
+    try:
+        traverse_and_compare(obj, None, macros)
+        assert False
+    except ValidationError as err:
+        assert err is not None

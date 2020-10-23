@@ -2,6 +2,7 @@ import json
 import logging
 from copy import deepcopy
 from typing import Tuple
+from jsonschema import validate, ValidationError
 import re
 from jmacros.traversal import MacroTypeDefinition, Token, format_trace, traverse, MacroList
 
@@ -81,6 +82,15 @@ class ClassMacro(MacroTypeDefinition):
         new_trace = trace + [name + "(template)"]
 
         # Validate input against the schema
+        if 'schema' in macro:
+            try:
+                validate(token, macro['schema'])
+            except ValidationError as err:
+                log.error(
+                    "%s: schema validation error on input to macro %s: %s",
+                    format_trace(trace), name, repr(err)
+                )
+                raise err
 
         # Replace '%' in template with key
         template = json.loads(json.dumps(macro['template']).replace("%", str(trace[-1])))
