@@ -1,9 +1,9 @@
 import json
 import logging
 from copy import deepcopy
-from typing import Tuple, Dict
+from typing import Tuple
 import re
-from traversal import MacroTypeDefinition, Token, format_trace, traverse, MacroList
+from jmacros.traversal import MacroTypeDefinition, Token, format_trace, traverse, MacroList
 
 log = logging.getLogger(__name__)
 

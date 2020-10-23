@@ -1,4 +1,4 @@
-from traversal import traverse
+from jmacros.traversal import traverse
 
 
 def test_traverse():

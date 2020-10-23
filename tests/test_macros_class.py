@@ -1,6 +1,6 @@
-from macros import ClassMacro
+from jmacros.macros import ClassMacro
 from tests.utils import traverse_and_compare
-from traversal import traverse
+from jmacros.traversal import traverse
 
 macro_defs = {
     "foobar": {
