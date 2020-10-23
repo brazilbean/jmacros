@@ -16,6 +16,10 @@ pip install git+https://github.com/brazilbean/jmacros.git
 
 *TODO: get this into pypi*
 
+**Requires `jq` to be available on the PATH.**  
+In theory (not tested yet, but the code is there),
+you can also `pip install jq` for a more efficient performance.
+
 ## Usage
 *A cleaner API is coming. For now, you get to use `traverse` directly.*
 
