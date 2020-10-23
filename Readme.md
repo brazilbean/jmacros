@@ -94,9 +94,11 @@ You have a token:
 Macro:
 ```yaml
 foobar:
+  schema: {type: object}
   template: {a: b, c: d}
 listbar:
   template: [1, 2, 3]
+
 ```
 Usage:
 ```yaml

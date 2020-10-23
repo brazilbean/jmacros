@@ -1,5 +1,5 @@
 import logging
-from typing import Union, Tuple, Protocol, Dict
+from typing import Union, Tuple, Protocol, Dict, List
 
 log = logging.getLogger(__name__)
 
@@ -11,18 +11,21 @@ class MacroTypeDefinition(Protocol):
     def is_macro(self, token: Token) -> bool:
         pass
 
-    def eval_macro(self, token: Token, macros: Dict[str, 'MacroTypeDefinition'], trace: list) -> Tuple[Token, bool]:
+    def eval_macro(self, token: Token, macros: List['MacroTypeDefinition'], trace: list) -> Tuple[Token, bool]:
         pass
+
+
+MacroList = List[MacroTypeDefinition]
 
 
 def format_trace(trace: list) -> str:
     return ".".join((str(i) for i in ["$"] + trace))
 
 
-def traverse(token: Token, macros: Dict[str, MacroTypeDefinition], trace: list) -> Tuple[Token, bool]:
-    for macro_name, macro in macros.items():
+def traverse(token: Token, macros: MacroList, trace: list) -> Tuple[Token, bool]:
+    for macro in macros:
         if macro.is_macro(token):
-            log.debug("%s: is %s macro", format_trace(trace), macro_name)
+            log.debug("%s: is %s macro", format_trace(trace), macro.__class__.__name__)
             # do macro
             return macro.eval_macro(token, macros, trace)
 
