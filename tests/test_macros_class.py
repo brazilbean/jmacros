@@ -1,6 +1,6 @@
 from jsonschema import ValidationError
 
-from jmacros.macros import ClassMacro
+from jmacros.macros.class_macros import ClassMacro
 from tests.utils import traverse_and_compare
 from jmacros.traversal import traverse
 
@@ -130,7 +130,7 @@ def test_invalid_schema():
         "foo": {"__macro": "fooinvalid"}
     }
     try:
-        traverse_and_compare(obj, None, macros)
+        traverse_and_compare(obj, [], macros)
         assert False
     except ValidationError as err:
         assert err is not None

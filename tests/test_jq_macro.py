@@ -1,4 +1,4 @@
-from jmacros.macros import JqSubstitutionMacro
+from jmacros.macros.jq_substitution import JqSubstitutionMacro
 from tests.utils import traverse_and_compare
 
 macros = [
