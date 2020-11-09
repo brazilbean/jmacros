@@ -23,11 +23,11 @@ def _get_file_stream(uri: str) -> BufferedReader:
     return urllib.request.urlopen(uri)
 
 
-def read_file_object(uri: str) -> dict:
+def _read_file_object(uri: str) -> dict:
     return yaml.load(_get_file_stream(uri), yaml.FullLoader)
 
 
-def read_file_string(uri: str) -> str:
+def _read_file_string(uri: str) -> str:
     with _get_file_stream(uri) as f:
         return f.read().decode()
 
@@ -48,7 +48,7 @@ class FileStringMacro(MacroTypeDefinition):
     def eval_macro(self, token: Token, macros: MacroList, trace: list) -> Tuple[Token, bool]:
         reference = token.pop("__file_string")
         url = _resolve_uri(self.base_url, reference)
-        result = read_file_string(url)
+        result = _read_file_string(url)
         result, _ = traverse(result, get_file_macros(url), trace + [f"__file_string({url})"])
 
         return result, False
@@ -73,7 +73,7 @@ class FileObjectMacro(MacroTypeDefinition):
             raise Exception('Illegal state')
 
         url = _resolve_uri(self.base_url, reference)
-        result = read_file_object(url)
+        result = _read_file_object(url)
         result, _ = traverse(result, get_file_macros(url), trace + [f"__file_object({url})"])
 
         return result, extend
